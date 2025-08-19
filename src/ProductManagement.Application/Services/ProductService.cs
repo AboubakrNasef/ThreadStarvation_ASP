@@ -48,6 +48,7 @@ namespace ProductManagement.Application.Services
                 ImageData = await _fileStore.GetFileAsync(product.ImagePath)
             };
             return productDto;
+
         }
 
     }
