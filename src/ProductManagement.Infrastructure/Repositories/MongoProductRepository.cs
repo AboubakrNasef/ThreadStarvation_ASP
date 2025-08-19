@@ -27,21 +27,5 @@ namespace ProductManagement.Infrastructure.Repositories
             return await _collection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
-        {
-            return await _collection.Find(_ => true).ToListAsync();
-        }
-
-        public async Task UpdateAsync(Product product)
-        {
-            var filter = Builders<Product>.Filter.Eq(p => p.Id, product.Id);
-            await _collection.ReplaceOneAsync(filter, product);
-        }
-
-        public async Task DeleteAsync(Guid id)
-        {
-            var filter = Builders<Product>.Filter.Eq(p => p.Id, id);
-            await _collection.DeleteOneAsync(filter);
-        }
     }
 }

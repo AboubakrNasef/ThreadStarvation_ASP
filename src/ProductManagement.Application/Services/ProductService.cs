@@ -1,7 +1,7 @@
 using ProductManagement.API.Controllers;
 using ProductManagement.Application.Interfaces;
 using ProductManagement.Domain.Entities;
-using ProductManagement.Infrastructure.FileStore;
+
 
 
 namespace ProductManagement.Application.Services
@@ -31,24 +31,24 @@ namespace ProductManagement.Application.Services
             return _productRepository.AddAsync(product);
         }
 
-        public Task<Product?> GetProductByIdAsync(Guid id)
+        public async Task<ProductDto?> GetProductByIdAsync(Guid id)
         {
-            return _productRepository.GetByIdAsync(id);
+            var product = await _productRepository.GetByIdAsync(id);
+            if (product == null)
+            {
+                return null;
+            }
+            var productDto = new ProductDto
+            {
+                Id = product.Id.ToString(),
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                ImageFileName = product.ImagePath,
+                ImageData = await _fileStore.GetFileAsync(product.ImagePath)
+            };
+            return productDto;
         }
 
-        public Task<IEnumerable<Product>> GetAllProductsAsync()
-        {
-            return _productRepository.GetAllAsync();
-        }
-
-        public Task UpdateProductAsync(Product product)
-        {
-            return _productRepository.UpdateAsync(product);
-        }
-
-        public Task DeleteProductAsync(Guid id)
-        {
-            return _productRepository.DeleteAsync(id);
-        }
     }
 }

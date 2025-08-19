@@ -1,9 +1,11 @@
 using Azure.Storage.Blobs;
+using ProductManagement.Application.Interfaces;
+using System.Reflection;
 
 
 namespace ProductManagement.Infrastructure.FileStore
 {
-    public class AzureBlobFileStore
+    public class AzureBlobFileStore : IFileStore
     {
         private readonly BlobContainerClient _containerClient;
 
@@ -23,13 +25,14 @@ namespace ProductManagement.Infrastructure.FileStore
             return fileName;
         }
 
-        public async Task<Stream?> GetFileAsync(string fileName)
+        public async Task<byte[]> GetFileAsync(string fileName)
         {
             var blobClient = _containerClient.GetBlobClient(fileName);
             if (!await blobClient.ExistsAsync())
-                return null;
-            var response = await blobClient.OpenReadAsync();
-            return response;
+                return Array.Empty<byte>();
+
+            var response = await blobClient.DownloadContentAsync();
+            return response.Value.Content.ToArray();
         }
     }
 }
